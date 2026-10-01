@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="description" content="Kadınlar Teşkilat Groß-Gerau – Aktiviteler, duyurular ve galeri.">
+<title>Kadınlar Teşkilat Groß-Gerau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="topline"></div>
+<header class="site-header">
+  <div class="nav-wrap">
+    <a class="brand" href="#home">
+      <span class="brand-mark">KG</span>
+      <span><strong>Kadınlar Teşkilat</strong><small>Groß-Gerau</small></span>
+    </a>
+    <nav id="nav">
+      <a href="#home">Ana Sayfa</a>
+      <a href="#aktiviteler">Aktiviteler</a>
+      <a href="#takvim">Takvim</a>
+      <a href="#duyurular">Duyurular</a>
+      <a href="#galeri">Galeri</a>
+      <a href="#iletisim">İletişim</a>
+    </nav>
+    <button class="menu" id="menu" aria-label="Menü">☰</button>
+  </div>
+</header>
+
+<main id="home">
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="pill">IGMG • Groß-Gerau</span>
+      <h1>Kadınlar Teşkilat<br><em>Groß-Gerau</em></h1>
+      <p>Birlikte paylaşmak, öğrenmek ve güzel anılar biriktirmek için.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#aktiviteler">Aktivitelerimizi keşfet <span>→</span></a>
+        <a class="btn ghost" href="#galeri">Fotoğraf Galerisi</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="ornament">✦</div>
+      <div class="hero-card-title">Kadınlar Teşkilatı</div>
+      <div class="hero-card-sub">Groß-Gerau</div>
+      <div class="hero-line"></div>
+      <div class="hero-note">Birlik • Eğitim • Dayanışma</div>
+    </div>
+  </div>
+</section>
+
+<section class="intro">
+  <div>
+    <span class="kicker">Hoş Geldiniz</span>
+    <h2>Birlikte daha güzel.</h2>
+  </div>
+  <p>Burada gerçekleştirdiğimiz etkinlikleri, duyuruları ve fotoğrafları bir arada bulabilirsiniz.</p>
+</section>
+
+<section class="calendar-section" id="takvim">
+  <div class="section-head">
+    <div><span class="kicker">2026 • İkinci Dönem</span><h2>Çalışma Takvimi</h2></div>
+    <div class="cal-controls"><button id="prevMonth" class="cal-btn">‹</button><strong id="calTitle"></strong><button id="nextMonth" class="cal-btn">›</button></div>
+  </div>
+  <div class="calendar" id="calendar"></div>
+  <div class="calendar-note"><span>●</span> Bir güne tıklayarak o günün tüm programlarını görüntüleyebilirsiniz.</div>
+</section>
+
+<div class="modal hidden" id="dayModal"><div class="modal-card day-card"><button class="close">×</button><span class="kicker">Takvim</span><h2 id="dayTitle"></h2><div id="dayEvents"></div></div></div>
+
+<section class="section" id="aktiviteler">
+  <div class="section-head">
+    <div><span class="kicker">Güncel</span><h2>Aktiviteler</h2></div>
+    <button class="admin-open" data-modal="activityModal">+ Aktivite ekle</button>
+  </div>
+  <div id="activityGrid" class="cards"></div>
+  <div id="activityEmpty" class="empty"><div>✦</div><h3>Henüz aktivite yok</h3><p>İlk aktivitenizi eklemek için „Aktivite ekle“ butonunu kullanın.</p></div>
+</section>
+
+<section class="band" id="duyurular">
+  <div class="section-head">
+    <div><span class="kicker light">Bilgilendirme</span><h2>Duyurular</h2></div>
+    <button class="admin-open light-btn" data-modal="noticeModal">+ Duyuru ekle</button>
+  </div>
+  <div id="noticeList" class="notice-list"></div>
+  <div id="noticeEmpty" class="empty dark-empty"><div>◌</div><h3>Henüz duyuru yok</h3><p>Yeni duyuruları buradan paylaşabilirsiniz.</p></div>
+</section>
+
+<section class="section" id="galeri">
+  <div class="section-head">
+    <div><span class="kicker">Anılar</span><h2>Fotoğraf Galerisi</h2></div>
+    <button class="admin-open" data-modal="galleryModal">+ Fotoğraf ekle</button>
+  </div>
+  <div id="gallery" class="gallery"></div>
+  <div id="galleryEmpty" class="empty"><div>▧</div><h3>Henüz fotoğraf yok</h3><p>Aktivite fotoğraflarınızı burada sammeln.</p></div>
+</section>
+
+<section class="contact" id="iletisim">
+  <div>
+    <span class="kicker">İletişim</span>
+    <h2>Bizimle iletişime geçin.</h2>
+    <p>Fragen, Hinweise oder Informationen? Wir freuen uns über Ihre Nachricht.</p>
+  </div>
+  <a class="btn primary" href="mailto:info@example.de">E-Mail schreiben <span>→</span></a>
+</section>
+</main>
+
+<footer>
+  <div class="footer-brand"><span class="brand-mark">KG</span><div><strong>Kadınlar Teşkilat Groß-Gerau</strong><small>IGMG Kadınlar Teşkilatı</small></div></div>
+  <a href="https://www.igmg.org/" target="_blank" rel="noopener">IGMG</a>
+  <span>© <span id="year"></span> • Private Webseite</span>
+</footer>
+
+<div class="modal hidden" id="activityModal">
+ <div class="modal-card"><button class="close">×</button><span class="kicker">Yeni</span><h2>Aktivite hinzufügen</h2>
+ <form id="activityForm">
+  <label>Başlık<input id="aTitle" required placeholder="Örn. Kadınlar Buluşması"></label>
+  <label>Tarih<input id="aDate" type="date"></label>
+  <label>Açıklama<textarea id="aText" rows="4" placeholder="Kısa açıklama..."></textarea></label>
+  <label>Fotoğraflar<input id="aImages" type="file" accept="image/*" multiple></label>
+  <button class="btn primary full" type="submit">Aktiviteyi yayınla</button>
+ </form></div>
+</div>
+
+<div class="modal hidden" id="noticeModal">
+ <div class="modal-card"><button class="close">×</button><span class="kicker">Yeni</span><h2>Duyuru ekle</h2>
+ <form id="noticeForm">
+  <label>Başlık<input id="nTitle" required placeholder="Duyuru başlığı"></label>
+  <label>Metin<textarea id="nText" rows="5" required placeholder="Duyuru metni..."></textarea></label>
+  <button class="btn primary full" type="submit">Duyuruyu yayınla</button>
+ </form></div>
+</div>
+
+<div class="modal hidden" id="galleryModal">
+ <div class="modal-card"><button class="close">×</button><span class="kicker">Galeri</span><h2>Fotoğraf hinzufügen</h2>
+ <form id="galleryForm">
+  <label>Fotoğraflar<input id="gImages" type="file" accept="image/*" multiple required></label>
+  <button class="btn primary full" type="submit">Fotoğrafları ekle</button>
+ </form></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
