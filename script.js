@@ -131,7 +131,7 @@ function renderCalendar() {
     const preview = dayEvents.slice(0, 2);
 
     const eventMarkup = preview.length
-      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2} mehr</span>` : ""}</div>`
+      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2}</span>` : ""}</div>`
       : "";
 
     html += `<button type="button" class="cal-day${dayEvents.length ? " has-event" : ""}" data-date="${dateStr}"><span class="cal-day-number">${day}</span>${eventMarkup}</button>`;
@@ -271,6 +271,11 @@ document.getElementById("nextMonth").onclick = () => {
 };
 
 const KEY = { a: "kg_activities", n: "kg_notices", g: "kg_gallery" };
+const DATA_PATHS = {
+  a: "./data/activities.json",
+  n: "./data/notices.json",
+  g: "./data/gallery.json"
+};
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
@@ -299,6 +304,21 @@ function normalizeImageUrl(value) {
     return url.href;
   } catch {
     return "";
+  }
+}
+
+async function loadRemoteData(key) {
+  const path = DATA_PATHS[key];
+  if (!path) return [];
+
+  try {
+    const res = await fetch(path, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+    const json = await res.json();
+    return Array.isArray(json) ? json : [];
+  } catch (error) {
+    console.warn(`Falling back to localStorage for ${key}:`, error);
+    return get(KEY[key]);
   }
 }
 
@@ -340,15 +360,14 @@ const date = s => s ? new Intl.DateTimeFormat("tr-TR", {
   year: "numeric"
 }).format(new Date(s + "T12:00:00")) : "";
 
-function renderActivities() {
-  const a = get(KEY.a).sort((x, y) => (y.date || "").localeCompare(x.date || ""));
+function renderActivities(items = get(KEY.a)) {
   const grid = $("#activityGrid");
   const empty = $("#activityEmpty");
 
   if (grid) grid.innerHTML = "";
-  if (empty) empty.style.display = a.length ? "none" : "block";
+  if (empty) empty.style.display = items.length ? "none" : "block";
 
-  a.forEach(x => {
+  items.forEach(x => {
     const article = document.createElement("article");
     article.className = "card";
 
@@ -384,15 +403,14 @@ function renderActivities() {
   });
 }
 
-function renderNotices() {
-  const n = get(KEY.n).sort((x, y) => y.id - x.id);
+function renderNotices(items = get(KEY.n)) {
   const list = $("#noticeList");
   const empty = $("#noticeEmpty");
 
   if (list) list.innerHTML = "";
-  if (empty) empty.style.display = n.length ? "none" : "block";
+  if (empty) empty.style.display = items.length ? "none" : "block";
 
-  n.forEach(x => {
+  items.forEach(x => {
     const notice = document.createElement("article");
     notice.className = "notice";
     notice.innerHTML = `
@@ -415,15 +433,14 @@ function renderNotices() {
   });
 }
 
-function renderGallery() {
-  const g = get(KEY.g);
+function renderGallery(items = get(KEY.g)) {
   const gallery = $("#gallery");
   const empty = $("#galleryEmpty");
 
   if (gallery) gallery.innerHTML = "";
-  if (empty) empty.style.display = g.length ? "none" : "block";
+  if (empty) empty.style.display = items.length ? "none" : "block";
 
-  g.forEach(item => {
+  items.forEach(item => {
     const figure = document.createElement("figure");
     figure.innerHTML = `
       <img src="${esc(item.src)}" alt="Aktivite fotoğrafı">
@@ -449,7 +466,7 @@ document.getElementById("activityForm").onsubmit = async e => {
   const title = document.getElementById("aTitle").value.trim();
   const dateValue = document.getElementById("aDate").value;
   const text = document.getElementById("aText").value.trim();
-  
+
   const filesInput = document.getElementById("aImages");
   const images = [];
 
@@ -561,7 +578,7 @@ document.getElementById("galleryForm").onsubmit = async e => {
   e.preventDefault();
 
   const filesInput = document.getElementById("gImages");
-  
+
   if (!filesInput || filesInput.files.length === 0) {
     window.alert("Bitte mindestens ein Bild auswählen.");
     return;
@@ -597,10 +614,16 @@ document.getElementById("galleryForm").onsubmit = async e => {
   }
 };
 
-function renderAll() {
-  renderActivities();
-  renderNotices();
-  renderGallery();
+async function renderAll() {
+  const [activities, notices, gallery] = await Promise.all([
+    loadRemoteData("a"),
+    loadRemoteData("n"),
+    loadRemoteData("g")
+  ]);
+
+  renderActivities(activities);
+  renderNotices(notices);
+  renderGallery(gallery);
   renderCalendar();
 }
 
