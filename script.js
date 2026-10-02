@@ -71,7 +71,8 @@ let calYear = 2026;
 
 const getCustomEvents = () => {
   try {
-    return JSON.parse(localStorage.getItem(EVENT_KEY) || "[]");
+    const events = JSON.parse(localStorage.getItem(EVENT_KEY) || "[]");
+    return Array.isArray(events) ? events : [];
   } catch {
     return [];
   }
@@ -93,6 +94,7 @@ const getCalendarEvents = () => {
     if (!item.date) return;
     const list = merged[item.date] || [];
     list.push({
+      id: item.id,
       title: item.title,
       time: item.time || "",
       location: item.location || "",
@@ -159,6 +161,35 @@ function esc(value) {
   }[char]));
 }
 
+function openEventEditor(dateKey, eventId = "") {
+  const form = document.getElementById("eventForm");
+  const modal = document.getElementById("eventModal");
+  const titleEl = document.getElementById("eventModalTitle");
+  const hiddenId = document.getElementById("eventId");
+
+  if (!form || !modal || !titleEl || !hiddenId) return;
+
+  hiddenId.value = eventId || "";
+
+  if (eventId) {
+    const item = getCustomEvents().find(entry => String(entry.id) === String(eventId));
+    if (item) {
+      document.getElementById("eTitle").value = item.title || "";
+      document.getElementById("eDate").value = item.date || dateKey;
+      document.getElementById("eTime").value = item.time || "";
+      document.getElementById("eLocation").value = item.location || "";
+      document.getElementById("eDescription").value = item.description || "";
+      titleEl.textContent = "Termin bearbeiten";
+    }
+  } else {
+    form.reset();
+    document.getElementById("eDate").value = dateKey || "";
+    titleEl.textContent = "Neuen Termin hinzufügen";
+  }
+
+  modal.classList.remove("hidden");
+}
+
 function openDay(key) {
   const ev = getCalendarEvents()[key] || [];
   const d = new Date(`${key}T12:00:00`);
@@ -177,16 +208,40 @@ function openDay(key) {
 
   if (list) {
     if (ev.length) {
-      list.innerHTML = ev.map(item => `
-        <article class="event-item">
-          <h3>${esc(item.title)}</h3>
-          <div class="event-meta">
-            ${item.time ? `<span>🕒 ${esc(item.time)}</span>` : ""}
-            ${item.location ? `<span>📍 ${esc(item.location)}</span>` : ""}
-          </div>
-          ${item.description ? `<p>${esc(item.description)}</p>` : ""}
-        </article>
-      `).join("");
+      list.innerHTML = ev.map(item => {
+        const isCustom = !!item.custom || item.id;
+        const eventId = item.id ? String(item.id) : "";
+        return `
+          <article class="event-item ${isCustom ? "event-item-custom" : ""}" data-event-id="${eventId}" data-date="${key}" tabindex="0" role="button">
+            <div class="event-item-header">
+              <h3>${esc(item.title)}</h3>
+              ${isCustom ? `<button type="button" class="event-edit-btn" data-edit-id="${eventId}" data-date="${key}">Bearbeiten</button>` : ""}
+            </div>
+            <div class="event-meta">
+              ${item.time ? `<span>🕒 ${esc(item.time)}</span>` : ""}
+              ${item.location ? `<span>📍 ${esc(item.location)}</span>` : ""}
+            </div>
+            ${item.description ? `<p>${esc(item.description)}</p>` : ""}
+          </article>
+        `;
+      }).join("");
+
+      list.querySelectorAll(".event-item-custom").forEach(article => {
+        article.onclick = event => {
+          if (event.target.closest(".event-edit-btn")) return;
+          const id = article.dataset.eventId;
+          if (id) {
+            openEventEditor(article.dataset.date, id);
+          }
+        };
+      });
+
+      list.querySelectorAll(".event-edit-btn").forEach(button => {
+        button.onclick = event => {
+          event.stopPropagation();
+          openEventEditor(button.dataset.date, button.dataset.editId);
+        };
+      });
     } else {
       list.innerHTML = "<p>Heute kein Termin.</p>";
     }
@@ -395,7 +450,6 @@ document.getElementById("activityForm").onsubmit = async e => {
   const dateValue = document.getElementById("aDate").value;
   const text = document.getElementById("aText").value.trim();
   
-  // FIX: Changed from 'aImageUrl' to 'aImages' - this is a file input
   const filesInput = document.getElementById("aImages");
   const images = [];
 
@@ -404,7 +458,6 @@ document.getElementById("activityForm").onsubmit = async e => {
     return;
   }
 
-  // Handle file uploads (convert to base64 data URLs for localStorage)
   if (filesInput && filesInput.files.length > 0) {
     for (let file of filesInput.files) {
       const reader = new FileReader();
@@ -472,21 +525,33 @@ document.getElementById("eventForm").onsubmit = e => {
   const time = document.getElementById("eTime").value.trim();
   const location = document.getElementById("eLocation").value.trim();
   const description = document.getElementById("eDescription").value.trim();
+  const eventId = document.getElementById("eventId").value;
 
   if (!title || !dateValue) return;
 
-  const current = getCustomEvents();
-  const next = [...current, {
-    id: Date.now(),
-    title,
-    date: dateValue,
-    time,
-    location,
-    description
-  }];
+  const customEvents = getCustomEvents();
 
-  saveCustomEvents(next);
+  if (eventId) {
+    const updated = customEvents.map(item => String(item.id) === String(eventId)
+      ? { ...item, title, date: dateValue, time, location, description }
+      : item
+    );
+    saveCustomEvents(updated);
+  } else {
+    const next = [...customEvents, {
+      id: Date.now(),
+      title,
+      date: dateValue,
+      time,
+      location,
+      description
+    }];
+    saveCustomEvents(next);
+  }
+
   e.target.reset();
+  document.getElementById("eventId").value = "";
+  document.getElementById("eventModalTitle").textContent = "Neuen Termin hinzufügen";
   renderCalendar();
   openDay(dateValue);
   document.getElementById("eventModal").classList.add("hidden");
@@ -495,7 +560,6 @@ document.getElementById("eventForm").onsubmit = e => {
 document.getElementById("galleryForm").onsubmit = async e => {
   e.preventDefault();
 
-  // FIX: Changed from 'gImageUrl' to 'gImages' - this is a file input
   const filesInput = document.getElementById("gImages");
   
   if (!filesInput || filesInput.files.length === 0) {
@@ -505,7 +569,6 @@ document.getElementById("galleryForm").onsubmit = async e => {
 
   const images = [];
 
-  // Handle file uploads
   for (let file of filesInput.files) {
     const reader = new FileReader();
     reader.onload = (event) => {
