@@ -220,7 +220,65 @@ const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
 const get = k => JSON.parse(localStorage.getItem(k) || "[]");
-const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+function set(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.error("localStorage save failed:", error);
+    if (error && error.name === "QuotaExceededError") {
+      window.alert("Speicher voll. Bitte nur eine kleine Bilddatei verwenden oder das Bild entfernen.");
+    }
+    return false;
+  }
+}
+
+const MAX_IMAGE_BYTES = 700000;
+
+function compressImageDataURL(dataUrl, maxWidth = 1200, quality = 0.72) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const scale = Math.min(1, maxWidth / img.width);
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const compressed = canvas.toDataURL("image/jpeg", quality);
+      resolve(compressed.length <= MAX_IMAGE_BYTES ? compressed : canvas.toDataURL("image/jpeg", 0.45));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+function filesToData(files) {
+  return Promise.all(
+    [...files]
+      .slice(0, 2)
+      .map(async (file) => {
+        if (!file || !file.type || !file.type.startsWith("image/")) return "";
+
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        return compressImageDataURL(base64, 1200, 0.72);
+      })
+  ).then(list => list.filter(Boolean));
+}
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -278,8 +336,23 @@ function renderActivities() {
         <small>${esc(date(x.date))}</small>
         <h3>${esc(x.title)}</h3>
         <p>${esc(x.text || "")}</p>
+        <div class="card-meta">
+          ${x.date ? `<span>📅 ${esc(date(x.date))}</span>` : ""}
+        </div>
+        <div class="activity-card-actions">
+          <button class="delete" type="button" data-id="${x.id}">Löschen</button>
+        </div>
       </div>
     `;
+
+    const delBtn = article.querySelector(".delete");
+    if (delBtn) {
+      delBtn.onclick = () => {
+        const next = get(KEY.a).filter(item => item.id !== x.id);
+        set(KEY.a, next);
+        renderAll();
+      };
+    }
 
     if (grid) grid.appendChild(article);
   });
@@ -344,17 +417,6 @@ function renderGallery() {
   });
 }
 
-function filesToData(files) {
-  return Promise.all([...files].map(file =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    })
-  ));
-}
-
 document.getElementById("activityForm").onsubmit = async e => {
   e.preventDefault();
 
@@ -362,6 +424,11 @@ document.getElementById("activityForm").onsubmit = async e => {
   const dateValue = document.getElementById("aDate").value;
   const text = document.getElementById("aText").value.trim();
   const files = document.getElementById("aImages").files;
+
+  if (!title || !dateValue) {
+    window.alert("Bitte Titel und Datum eingeben.");
+    return;
+  }
 
   let images = [];
   if (files && files.length) {
@@ -377,10 +444,14 @@ document.getElementById("activityForm").onsubmit = async e => {
   };
 
   const current = get(KEY.a);
-  current.push(item);
-  set(KEY.a, current);
+  const next = [...current, item];
+
+  if (!set(KEY.a, next)) {
+    return;
+  }
 
   e.target.reset();
+  document.getElementById("activityModal").classList.add("hidden");
   renderAll();
 };
 
@@ -393,14 +464,14 @@ document.getElementById("noticeForm").onsubmit = e => {
   if (!title || !text) return;
 
   const current = get(KEY.n);
-  current.push({
+  const next = [...current, {
     id: Date.now(),
     title,
     text,
     date: new Date().toISOString().slice(0, 10)
-  });
+  }];
 
-  set(KEY.n, current);
+  set(KEY.n, next);
   e.target.reset();
   renderAll();
 };
@@ -417,16 +488,16 @@ document.getElementById("eventForm").onsubmit = e => {
   if (!title || !date) return;
 
   const current = getCustomEvents();
-  current.push({
+  const next = [...current, {
     id: Date.now(),
     title,
     date,
     time,
     location,
     description
-  });
+  }];
 
-  saveCustomEvents(current);
+  saveCustomEvents(next);
   e.target.reset();
   renderCalendar();
   openDay(date);
@@ -442,14 +513,12 @@ document.getElementById("galleryForm").onsubmit = async e => {
   const current = get(KEY.g);
   const images = await filesToData(files);
 
-  images.forEach(src => {
-    current.push({
-      id: Date.now() + Math.random(),
-      src
-    });
-  });
+  const next = [...current, ...images.map(src => ({
+    id: Date.now() + Math.random(),
+    src
+  }))];
 
-  set(KEY.g, current);
+  set(KEY.g, next);
   e.target.reset();
   renderAll();
 };
