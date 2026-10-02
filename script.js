@@ -129,7 +129,7 @@ function renderCalendar() {
     const preview = dayEvents.slice(0, 2);
 
     const eventMarkup = preview.length
-      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2}</span>` : ""}</div>`
+      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2} mehr</span>` : ""}</div>`
       : "";
 
     html += `<button type="button" class="cal-day${dayEvents.length ? " has-event" : ""}" data-date="${dateStr}"><span class="cal-day-number">${day}</span>${eventMarkup}</button>`;
@@ -468,18 +468,18 @@ document.getElementById("eventForm").onsubmit = e => {
   e.preventDefault();
 
   const title = document.getElementById("eTitle").value.trim();
-  const date = document.getElementById("eDate").value;
+  const dateValue = document.getElementById("eDate").value;
   const time = document.getElementById("eTime").value.trim();
   const location = document.getElementById("eLocation").value.trim();
   const description = document.getElementById("eDescription").value.trim();
 
-  if (!title || !date) return;
+  if (!title || !dateValue) return;
 
   const current = getCustomEvents();
   const next = [...current, {
     id: Date.now(),
     title,
-    date,
+    date: dateValue,
     time,
     location,
     description
@@ -488,7 +488,7 @@ document.getElementById("eventForm").onsubmit = e => {
   saveCustomEvents(next);
   e.target.reset();
   renderCalendar();
-  openDay(date);
+  openDay(dateValue);
   document.getElementById("eventModal").classList.add("hidden");
 };
 
