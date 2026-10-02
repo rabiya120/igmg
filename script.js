@@ -188,7 +188,7 @@ function openDay(key) {
         </article>
       `).join("");
     } else {
-      list.innerHTML = "<p>Bu gün program yok.</p>";
+      list.innerHTML = "<p>Heute kein Termin.</p>";
     }
   }
 
