@@ -129,7 +129,7 @@ function renderCalendar() {
     const preview = dayEvents.slice(0, 2);
 
     const eventMarkup = preview.length
-      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2} mehr</span>` : ""}</div>`
+      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2}</span>` : ""}</div>`
       : "";
 
     html += `<button type="button" class="cal-day${dayEvents.length ? " has-event" : ""}" data-date="${dateStr}"><span class="cal-day-number">${day}</span>${eventMarkup}</button>`;
@@ -394,31 +394,52 @@ document.getElementById("activityForm").onsubmit = async e => {
   const title = document.getElementById("aTitle").value.trim();
   const dateValue = document.getElementById("aDate").value;
   const text = document.getElementById("aText").value.trim();
-  const imageUrl = normalizeImageUrl(document.getElementById("aImageUrl").value);
+  
+  // FIX: Changed from 'aImageUrl' to 'aImages' - this is a file input
+  const filesInput = document.getElementById("aImages");
+  const images = [];
 
   if (!title || !dateValue) {
     window.alert("Bitte Titel und Datum eingeben.");
     return;
   }
 
-  const item = {
-    id: Date.now(),
-    title,
-    date: dateValue,
-    text,
-    images: imageUrl ? [imageUrl] : []
-  };
-
-  const current = get(KEY.a);
-  const next = [...current, item];
-
-  if (!set(KEY.a, next)) {
-    return;
+  // Handle file uploads (convert to base64 data URLs for localStorage)
+  if (filesInput && filesInput.files.length > 0) {
+    for (let file of filesInput.files) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        images.push(event.target.result);
+        if (images.length === filesInput.files.length) {
+          saveActivity(title, dateValue, text, images);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  } else {
+    saveActivity(title, dateValue, text, images);
   }
 
-  e.target.reset();
-  document.getElementById("activityModal").classList.add("hidden");
-  renderAll();
+  function saveActivity(title, dateValue, text, images) {
+    const item = {
+      id: Date.now(),
+      title,
+      date: dateValue,
+      text,
+      images: images
+    };
+
+    const current = get(KEY.a);
+    const next = [...current, item];
+
+    if (!set(KEY.a, next)) {
+      return;
+    }
+
+    e.target.reset();
+    document.getElementById("activityModal").classList.add("hidden");
+    renderAll();
+  }
 };
 
 document.getElementById("noticeForm").onsubmit = e => {
@@ -439,6 +460,7 @@ document.getElementById("noticeForm").onsubmit = e => {
 
   set(KEY.n, next);
   e.target.reset();
+  document.getElementById("noticeModal").classList.add("hidden");
   renderAll();
 };
 
@@ -473,23 +495,43 @@ document.getElementById("eventForm").onsubmit = e => {
 document.getElementById("galleryForm").onsubmit = async e => {
   e.preventDefault();
 
-  const input = document.getElementById("gImageUrl");
-  const url = normalizeImageUrl(input.value);
-
-  if (!url) {
-    window.alert("Bitte eine gültige Bild-URL einfügen.");
+  // FIX: Changed from 'gImageUrl' to 'gImages' - this is a file input
+  const filesInput = document.getElementById("gImages");
+  
+  if (!filesInput || filesInput.files.length === 0) {
+    window.alert("Bitte mindestens ein Bild auswählen.");
     return;
   }
 
-  const current = get(KEY.g);
-  const next = [...current, {
-    id: Date.now() + Math.random(),
-    src: url
-  }];
+  const images = [];
 
-  set(KEY.g, next);
-  e.target.reset();
-  renderAll();
+  // Handle file uploads
+  for (let file of filesInput.files) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      images.push(event.target.result);
+      if (images.length === filesInput.files.length) {
+        saveGallery(images);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveGallery(images) {
+    const current = get(KEY.g);
+    const next = [...current, ...images.map(src => ({
+      id: Date.now() + Math.random(),
+      src: src
+    }))];
+
+    if (!set(KEY.g, next)) {
+      return;
+    }
+
+    e.target.reset();
+    document.getElementById("galleryModal").classList.add("hidden");
+    renderAll();
+  }
 };
 
 function renderAll() {
