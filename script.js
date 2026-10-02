@@ -1,27 +1,109 @@
 const CAL = {
-  "2026-10-01": ["Yaşlılar Haftası", "GG KT Anne Çocuk oyun halkası", "Ev Sohbetleri Aksiyonu Başlangıcı"],
-  "2026-10-02": ["KGT ŞYK Toplantı + Sohbet"],
-  "2026-10-03": ["TOM (Açık Cami Günü)", "GG KT ŞYK Toplantısı"],
-  "2026-10-04": ["Aile Etkinliği"],
-  "2026-10-05": ["Kütüphane Çalışması"],
-  "2026-10-06": ["Beyin Fırtınası"],
-  "2026-10-07": ["Sohbet Günü"],
-  "2026-11-01": ["Bölge 2. GŞBT", "GG KT ŞYK Toplantısı", "Bölge AT EMMT", "GG KT Aile Eğitim Semineri"],
-  "2026-11-03": ["GG KT YEK"],
-  "2026-11-04": ["İmam Hatipler Toplantısı"],
-  "2026-11-05": ["GG KT Anne Çocuk oyun halkası"],
-  "2026-11-06": ["KGT Toplantı"],
-  "2026-12-01": ["GG KT YEK"],
-  "2026-12-02": ["İmam Hatipler Toplantısı"],
-  "2026-12-03": ["Dünya Engelliler Günü", "GG KT Anne Çocuk oyun halkası"],
-  "2026-12-04": ["KGT ŞYK Toplantı + Sohbet"],
-  "2026-12-05": ["Toplumsal Etkinlik"],
-  "2026-12-06": ["Açık Sohbet"],
-  "2026-12-08": ["Aile Buluşması"]
+  "2026-10-01": [
+    { title: "Yaşlılar Haftası", time: "09:00", location: "Groß-Gerau", description: "Gemeinsames Programm für die ältere Generation." },
+    { title: "GG KT Anne Çocuk oyun halkası", time: "15:00", location: "Gemeindezentrum", description: "Spiel- und Bewegungsaktivität für Kinder und Familien." },
+    { title: "Ev Sohbetleri Aksiyonu Başlangıcı", time: "18:30", location: "Hauskreis", description: "Beginn der Gesprächs- und Austauschrunde zu Hause." }
+  ],
+  "2026-10-02": [
+    { title: "KGT ŞYK Toplantı + Sohbet", time: "19:00", location: "Groß-Gerau", description: "Teamtreffen mit Gesprächsrunde." }
+  ],
+  "2026-10-03": [
+    { title: "TOM (Açık Cami Günü)", time: "10:00", location: "Moschee", description: "Offener Tag mit kurzer Präsentation." },
+    { title: "GG KT ŞYK Toplantısı", time: "17:30", location: "Groß-Gerau", description: "Regelmäßiges Treffen des Organisationskreises." }
+  ],
+  "2026-10-04": [
+    { title: "Aile Etkinliği", time: "13:00", location: "Park", description: "Familienprogramm mit Spieleinheiten." }
+  ],
+  "2026-10-05": [
+    { title: "Kütüphane Çalışması", time: "11:00", location: "Bibliothek", description: "Lese- und Lernrunde." }
+  ],
+  "2026-10-06": [
+    { title: "Beyin Fırtınası", time: "18:00", location: "Groß-Gerau", description: "Ideenrunde und Projektplanung." }
+  ],
+  "2026-10-07": [
+    { title: "Sohbet Günü", time: "17:00", location: "Gemeindezentrum", description: "Tagesgespräch und Austausch." }
+  ],
+  "2026-11-01": [
+    { title: "Bölge 2. GŞBT", time: "09:30", location: "Regional", description: "Regionale Sitzung." },
+    { title: "GG KT ŞYK Toplantısı", time: "17:00", location: "Groß-Gerau", description: "Organisationstreffen." },
+    { title: "Bölge AT EMMT", time: "11:00", location: "Regional", description: "Regionale Zusammenarbeit." },
+    { title: "GG KT Aile Eğitim Semineri", time: "18:00", location: "Gemeindezentrum", description: "Seminar zum Thema Familie und Bildung." }
+  ],
+  "2026-11-03": [
+    { title: "GG KT YEK", time: "10:00", location: "Groß-Gerau", description: "Jährliche Regionalkonferenz." }
+  ],
+  "2026-11-04": [
+    { title: "İmam Hatipler Toplantısı", time: "19:00", location: "Groß-Gerau", description: "Treffen mit Geistlichen und Kooperationspartnern." }
+  ],
+  "2026-11-05": [
+    { title: "GG KT Anne Çocuk oyun halkası", time: "15:00", location: "Gemeindezentrum", description: "Programm für Familien und Kinder." }
+  ],
+  "2026-11-06": [
+    { title: "KGT Toplantı", time: "18:30", location: "Groß-Gerau", description: "Treffen der Arbeitsgruppe." }
+  ],
+  "2026-12-01": [
+    { title: "GG KT YEK", time: "10:00", location: "Groß-Gerau", description: "Jährliche Versammlung." }
+  ],
+  "2026-12-02": [
+    { title: "İmam Hatipler Toplantısı", time: "19:00", location: "Groß-Gerau", description: "Austausch mit Verantwortlichen." }
+  ],
+  "2026-12-03": [
+    { title: "Dünya Engelliler Günü", time: "09:00", location: "Groß-Gerau", description: "Aktions- und Sensibilisierungstag." },
+    { title: "GG KT Anne Çocuk oyun halkası", time: "15:00", location: "Gemeindezentrum", description: "Familienprogramm für Kinder und Mütter." }
+  ],
+  "2026-12-04": [
+    { title: "KGT ŞYK Toplantı + Sohbet", time: "18:30", location: "Groß-Gerau", description: "Gespräch und Planung." }
+  ],
+  "2026-12-05": [
+    { title: "Toplumsal Etkinlik", time: "17:00", location: "Groß-Gerau", description: "Gemeinsames gesellschaftliches Ereignis." }
+  ],
+  "2026-12-06": [
+    { title: "Açık Sohbet", time: "18:00", location: "Gemeindezentrum", description: "Offener Austausch mit der Gemeinschaft." }
+  ],
+  "2026-12-08": [
+    { title: "Aile Buluşması", time: "13:00", location: "Groß-Gerau", description: "Familien- und Begegnungsprogramm." }
+  ]
 };
 
+const EVENT_KEY = "kg_calendar_events";
 let calMonth = 9;
 let calYear = 2026;
+
+const getCustomEvents = () => {
+  try {
+    return JSON.parse(localStorage.getItem(EVENT_KEY) || "[]");
+  } catch {
+    return [];
+  }
+};
+
+const saveCustomEvents = (events) => {
+  localStorage.setItem(EVENT_KEY, JSON.stringify(events));
+};
+
+const getCalendarEvents = () => {
+  const customEvents = getCustomEvents();
+  const merged = {};
+
+  Object.entries(CAL).forEach(([date, list]) => {
+    merged[date] = [...list];
+  });
+
+  customEvents.forEach(item => {
+    if (!item.date) return;
+    const list = merged[item.date] || [];
+    list.push({
+      title: item.title,
+      time: item.time || "",
+      location: item.location || "",
+      description: item.description || "",
+      custom: true
+    });
+    merged[item.date] = list;
+  });
+
+  return merged;
+};
 
 function renderCalendar() {
   const names = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
@@ -29,6 +111,7 @@ function renderCalendar() {
 
   const firstDay = new Date(calYear, calMonth, 1).getDay() || 7;
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const eventsByDate = getCalendarEvents();
 
   let html = "";
 
@@ -42,8 +125,14 @@ function renderCalendar() {
 
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const hasEvent = CAL[dateStr] ? " has-event" : "";
-    html += `<button type="button" class="cal-day${hasEvent}" data-date="${dateStr}">${day}</button>`;
+    const dayEvents = eventsByDate[dateStr] || [];
+    const preview = dayEvents.slice(0, 2);
+
+    const eventMarkup = preview.length
+      ? `<div class="cal-event-stack">${preview.map(item => `<span class="cal-badge">${String(item.title).slice(0, 26)}</span>`).join("")}${dayEvents.length > 2 ? `<span class="cal-more">+${dayEvents.length - 2} mehr</span>` : ""}</div>`
+      : "";
+
+    html += `<button type="button" class="cal-day${dayEvents.length ? " has-event" : ""}" data-date="${dateStr}"><span class="cal-day-number">${day}</span>${eventMarkup}</button>`;
   }
 
   const calendar = document.getElementById("calendar");
@@ -60,8 +149,18 @@ function renderCalendar() {
   }
 }
 
+function esc(value) {
+  return String(value || "").replace(/[&<>\'\"]/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#039;",
+    '"': "&quot;"
+  }[char]));
+}
+
 function openDay(key) {
-  const ev = CAL[key] || [];
+  const ev = getCalendarEvents()[key] || [];
   const d = new Date(`${key}T12:00:00`);
   const modal = document.getElementById("dayModal");
   const title = document.getElementById("dayTitle");
@@ -78,7 +177,16 @@ function openDay(key) {
 
   if (list) {
     if (ev.length) {
-      list.innerHTML = ev.map(item => `<div class="event-item">${item}</div>`).join("");
+      list.innerHTML = ev.map(item => `
+        <article class="event-item">
+          <h3>${esc(item.title)}</h3>
+          <div class="event-meta">
+            ${item.time ? `<span>🕒 ${esc(item.time)}</span>` : ""}
+            ${item.location ? `<span>📍 ${esc(item.location)}</span>` : ""}
+          </div>
+          ${item.description ? `<p>${esc(item.description)}</p>` : ""}
+        </article>
+      `).join("");
     } else {
       list.innerHTML = "<p>Bu gün program yok.</p>";
     }
@@ -145,14 +253,6 @@ $$(".modal").forEach(modal => {
     closeButton.onclick = () => modal.classList.add("hidden");
   }
 });
-
-const esc = s => String(s || "").replace(/[&<>"']/g, c => ({
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#039;"
-}[c]));
 
 const date = s => s ? new Intl.DateTimeFormat("tr-TR", {
   day: "2-digit",
@@ -305,6 +405,34 @@ document.getElementById("noticeForm").onsubmit = e => {
   renderAll();
 };
 
+document.getElementById("eventForm").onsubmit = e => {
+  e.preventDefault();
+
+  const title = document.getElementById("eTitle").value.trim();
+  const date = document.getElementById("eDate").value;
+  const time = document.getElementById("eTime").value.trim();
+  const location = document.getElementById("eLocation").value.trim();
+  const description = document.getElementById("eDescription").value.trim();
+
+  if (!title || !date) return;
+
+  const current = getCustomEvents();
+  current.push({
+    id: Date.now(),
+    title,
+    date,
+    time,
+    location,
+    description
+  });
+
+  saveCustomEvents(current);
+  e.target.reset();
+  renderCalendar();
+  openDay(date);
+  document.getElementById("eventModal").classList.add("hidden");
+};
+
 document.getElementById("galleryForm").onsubmit = async e => {
   e.preventDefault();
 
@@ -330,7 +458,7 @@ function renderAll() {
   renderActivities();
   renderNotices();
   renderGallery();
+  renderCalendar();
 }
 
 renderAll();
-renderCalendar();
