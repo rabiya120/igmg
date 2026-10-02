@@ -70,7 +70,7 @@
     <div class="cal-controls"><button id="prevMonth" class="cal-btn">‹</button><strong id="calTitle"></strong><button id="nextMonth" class="cal-btn">›</button></div>
   </div>
   <div class="calendar" id="calendar"></div>
-  <button class="btn primary add-event-btn admin-open" data-modal="eventModal" type="button">+ Neuer Termin eintragen</button>
+  <button class="btn primary add-event-btn admin-open" data-modal="eventModal" type="button">+ Yeni etkinlik ekle</button>
   <div class="calendar-note"><span>●</span> Bir güne tıklayarak o günün tüm programlarını görüntüleyebilirsiniz.</div>
 </section>
   
@@ -116,18 +116,18 @@
     <h2>Bizimle iletişime geçin.</h2>
     <p>Fragen, Hinweise oder Informationen? Wir freuen uns über Ihre Nachricht.</p>
   </div>
-  <a class="btn primary" href="mailto:info@example.de">E-Mail schreiben <span>→</span></a>
+  <a class="btn primary" href="mailto:info@example.de">E-Mail yaz <span>→</span></a>
 </section>
 </main>
 
 <footer>
   <div class="footer-brand"><span class="brand-mark">KG</span><div><strong>Kadınlar Teşkilat Groß-Gerau</strong><small>IGMG Kadınlar Teşkilatı</small></div></div>
   <a href="https://www.igmg.org/" target="_blank" rel="noopener">IGMG</a>
-  <span>© <span id="year"></span> • Private Webseite</span>
+  <span>© <span id="year"></span> • Özel web sitesi</span>
 </footer>
 
 <div class="modal hidden" id="activityModal">
- <div class="modal-card"><button class="close">×</button><span class="kicker">Yeni</span><h2>Aktivite hinzufügen</h2>
+ <div class="modal-card"><button class="close">×</button><span class="kicker">Yeni</span><h2>Aktivite ekle</h2>
  <form id="activityForm">
   <label>Başlık<input id="aTitle" required placeholder="Örn. Kadınlar Buluşması"></label>
   <label>Tarih<input id="aDate" type="date"></label>
@@ -147,20 +147,20 @@
 </div>
 
 <div class="modal hidden" id="eventModal">
-  <div class="modal-card"><button class="close" type="button">×</button><span class="kicker">Neues</span><h2>Termin eintragen</h2>
+  <div class="modal-card"><button class="close" type="button">×</button><span class="kicker">Yeni</span><h2>Etkinlik ekle</h2>
     <form id="eventForm">
-      <label>Titel<input id="eTitle" required placeholder="z. B. Frauenkreis"></label>
-      <label>Datum<input id="eDate" type="date" required></label>
-      <label>Uhrzeit<input id="eTime" type="time" placeholder="09:00"></label>
-      <label>Ort<input id="eLocation" placeholder="z. B. Gemeindezentrum"></label>
-      <label>Beschreibung<textarea id="eDescription" rows="4" placeholder="Weitere Informationen..."></textarea></label>
-      <button class="btn primary full" type="submit">Termin speichern</button>
+      <label>Başlık<input id="eTitle" required placeholder="Örn. Kadınlar Topluluğu"></label>
+      <label>Tarih<input id="eDate" type="date" required></label>
+      <label>Saat<input id="eTime" type="time" placeholder="09:00"></label>
+      <label>Yer<input id="eLocation" placeholder="Örn. Topluluk merkezi"></label>
+      <label>Açıklama<textarea id="eDescription" rows="4" placeholder="Ek bilgi yazın..."></textarea></label>
+      <button class="btn primary full" type="submit">Etkinliği kaydet</button>
     </form>
   </div>
 </div>
 
 <div class="modal hidden" id="galleryModal">
-  <div class="modal-card"><button class="close">×</button><span class="kicker">Galeri</span><h2>Fotoğraf hinzufügen</h2>
+  <div class="modal-card"><button class="close">×</button><span class="kicker">Galeri</span><h2>Fotoğraf ekle</h2>
   <form id="galleryForm">
    <label>Fotoğraflar<input id="gImages" type="file" accept="image/*" multiple required></label>
    <button class="btn primary full" type="submit">Fotoğrafları ekle</button>
