@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  .calendar-section{max-width:1180px;margin:auto;padding:75px 28px 25px}.cal-controls{display:flex;align-items:center;gap:13px;color:#176b4a}.cal-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(23,107,74,.18);background:#fff;cursor:pointer}.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-top:18px}.cal-day-name{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6d7b74;text-align:center;padding-bottom:6px}.cal-empty{min-height:122px;border-radius:16px;background:rgba(255,255,255,.35)}.cal-day{position:relative;min-height:122px;padding:10px 8px;border:1px solid rgba(23,107,74,.14);border-radius:16px;background:#fff;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;cursor:pointer;transition:transform .2s ease, box-shadow .2s ease}.cal-day:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(23,107,74,.08)}.cal-day.has-event{background:linear-gradient(180deg,#fffef7,#fff);border-color:rgba(232,155,52,.45)}.cal-day-number{font-size:1rem;font-weight:700;color:#18332a}.cal-event-stack{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:8px}.cal-badge{display:block;width:100%;padding:5px 7px;border-radius:10px;background:#eefcf4;color:#165d46;font-size:.66rem;font-weight:600;line-height:1.3;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cal-more{font-size:.64rem;font-weight:700;color:#9a6e17;margin-top:2px}.event-item{background:#f9f6ef;border:1px solid rgba(23,107,74,.12);border-radius:14px;padding:14px 15px;margin-bottom:12px}.event-item h3{margin:0 0 8px;font-size:1.1rem;color:#18332a}.event-item p{margin:0;color:#53655f;line-height:1.6}.event-meta{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 10px;color:#45645a;font-size:.83rem}.event-meta span{display:inline-flex;align-items:center;gap:6px}.add-event-btn{margin-top:18px}.modal-card.day-card{max-width:560px}.day-card #dayEvents{max-height:420px;overflow:auto;padding-right:6px}.day-card .event-item{cursor:pointer}.day-card .event-item:hover{border-color:rgba(23,107,74,.3)}@media (max-width:700px){.calendar{gap:8px}.cal-day,.cal-empty{min-height:105px;border-radius:12px}.cal-day-name{font-size:.64rem}.cal-badge{font-size:.58rem;padding:4px 6px}}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -67,6 +70,7 @@
     <div class="cal-controls"><button id="prevMonth" class="cal-btn">‹</button><strong id="calTitle"></strong><button id="nextMonth" class="cal-btn">›</button></div>
   </div>
   <div class="calendar" id="calendar"></div>
+  <button class="btn primary add-event-btn admin-open" data-modal="eventModal" type="button">+ Neuer Termin eintragen</button>
   <div class="calendar-note"><span>●</span> Bir güne tıklayarak o günün tüm programlarını görüntüleyebilirsiniz.</div>
 </section>
   
@@ -134,20 +138,33 @@
 </div>
 
 <div class="modal hidden" id="noticeModal">
- <div class="modal-card"><button class="close">×</button><span class="kicker">Yeni</span><h2>Duyuru ekle</h2>
- <form id="noticeForm">
-  <label>Başlık<input id="nTitle" required placeholder="Duyuru başlığı"></label>
-  <label>Metin<textarea id="nText" rows="5" required placeholder="Duyuru metni..."></textarea></label>
-  <button class="btn primary full" type="submit">Duyuruyu yayınla</button>
- </form></div>
+  <div class="modal-card"><button class="close">×</button><span class="kicker">Yeni</span><h2>Duyuru ekle</h2>
+  <form id="noticeForm">
+   <label>Başlık<input id="nTitle" required placeholder="Duyuru başlığı"></label>
+   <label>Metin<textarea id="nText" rows="5" required placeholder="Duyuru metni..."></textarea></label>
+   <button class="btn primary full" type="submit">Duyuruyu yayınla</button>
+  </form></div>
+</div>
+
+<div class="modal hidden" id="eventModal">
+  <div class="modal-card"><button class="close" type="button">×</button><span class="kicker">Neues</span><h2>Termin eintragen</h2>
+    <form id="eventForm">
+      <label>Titel<input id="eTitle" required placeholder="z. B. Frauenkreis"></label>
+      <label>Datum<input id="eDate" type="date" required></label>
+      <label>Uhrzeit<input id="eTime" type="time" placeholder="09:00"></label>
+      <label>Ort<input id="eLocation" placeholder="z. B. Gemeindezentrum"></label>
+      <label>Beschreibung<textarea id="eDescription" rows="4" placeholder="Weitere Informationen..."></textarea></label>
+      <button class="btn primary full" type="submit">Termin speichern</button>
+    </form>
+  </div>
 </div>
 
 <div class="modal hidden" id="galleryModal">
- <div class="modal-card"><button class="close">×</button><span class="kicker">Galeri</span><h2>Fotoğraf hinzufügen</h2>
- <form id="galleryForm">
-  <label>Fotoğraflar<input id="gImages" type="file" accept="image/*" multiple required></label>
-  <button class="btn primary full" type="submit">Fotoğrafları ekle</button>
- </form></div>
+  <div class="modal-card"><button class="close">×</button><span class="kicker">Galeri</span><h2>Fotoğraf hinzufügen</h2>
+  <form id="galleryForm">
+   <label>Fotoğraflar<input id="gImages" type="file" accept="image/*" multiple required></label>
+   <button class="btn primary full" type="submit">Fotoğrafları ekle</button>
+  </form></div>
 </div>
 
 <script src="script.js"></script>
