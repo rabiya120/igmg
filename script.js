@@ -228,56 +228,23 @@ function set(key, value) {
   } catch (error) {
     console.error("localStorage save failed:", error);
     if (error && error.name === "QuotaExceededError") {
-      window.alert("Speicher voll. Bitte nur eine kleine Bilddatei verwenden oder das Bild entfernen.");
+      window.alert("Speicher voll. Bitte nur wenige oder keine Bilddaten speichern. Nutze eine Bild-URL oder eine Cloud-Lösung.");
     }
     return false;
   }
 }
 
-const MAX_IMAGE_BYTES = 700000;
+function normalizeImageUrl(value) {
+  if (!value) return "";
+  const text = String(value).trim();
+  if (!text) return "";
 
-function compressImageDataURL(dataUrl, maxWidth = 1200, quality = 0.72) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const scale = Math.min(1, maxWidth / img.width);
-      canvas.width = Math.max(1, Math.round(img.width * scale));
-      canvas.height = Math.max(1, Math.round(img.height * scale));
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        resolve(dataUrl);
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      const compressed = canvas.toDataURL("image/jpeg", quality);
-      resolve(compressed.length <= MAX_IMAGE_BYTES ? compressed : canvas.toDataURL("image/jpeg", 0.45));
-    };
-    img.onerror = () => resolve(dataUrl);
-    img.src = dataUrl;
-  });
-}
-
-function filesToData(files) {
-  return Promise.all(
-    [...files]
-      .slice(0, 2)
-      .map(async (file) => {
-        if (!file || !file.type || !file.type.startsWith("image/")) return "";
-
-        const base64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        return compressImageDataURL(base64, 1200, 0.72);
-      })
-  ).then(list => list.filter(Boolean));
+  try {
+    const url = new URL(text);
+    return url.href;
+  } catch {
+    return "";
+  }
 }
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -330,8 +297,12 @@ function renderActivities() {
     const article = document.createElement("article");
     article.className = "card";
 
+    const imageHtml = x.images && x.images[0]
+      ? `<img class="card-img" src="${esc(x.images[0])}" alt="">`
+      : `<div class="card-img"></div>`;
+
     article.innerHTML = `
-      ${x.images && x.images[0] ? `<img class="card-img" src="${x.images[0]}" alt="">` : `<div class="card-img"></div>`}
+      ${imageHtml}
       <div class="card-body">
         <small>${esc(date(x.date))}</small>
         <h3>${esc(x.title)}</h3>
@@ -400,7 +371,7 @@ function renderGallery() {
   g.forEach(item => {
     const figure = document.createElement("figure");
     figure.innerHTML = `
-      <img src="${item.src}" alt="Aktivite fotoğrafı">
+      <img src="${esc(item.src)}" alt="Aktivite fotoğrafı">
       <button type="button">×</button>
     `;
 
@@ -423,16 +394,11 @@ document.getElementById("activityForm").onsubmit = async e => {
   const title = document.getElementById("aTitle").value.trim();
   const dateValue = document.getElementById("aDate").value;
   const text = document.getElementById("aText").value.trim();
-  const files = document.getElementById("aImages").files;
+  const imageUrl = normalizeImageUrl(document.getElementById("aImageUrl").value);
 
   if (!title || !dateValue) {
     window.alert("Bitte Titel und Datum eingeben.");
     return;
-  }
-
-  let images = [];
-  if (files && files.length) {
-    images = await filesToData(files);
   }
 
   const item = {
@@ -440,7 +406,7 @@ document.getElementById("activityForm").onsubmit = async e => {
     title,
     date: dateValue,
     text,
-    images
+    images: imageUrl ? [imageUrl] : []
   };
 
   const current = get(KEY.a);
@@ -507,16 +473,19 @@ document.getElementById("eventForm").onsubmit = e => {
 document.getElementById("galleryForm").onsubmit = async e => {
   e.preventDefault();
 
-  const files = document.getElementById("gImages").files;
-  if (!files || !files.length) return;
+  const input = document.getElementById("gImageUrl");
+  const url = normalizeImageUrl(input.value);
+
+  if (!url) {
+    window.alert("Bitte eine gültige Bild-URL einfügen.");
+    return;
+  }
 
   const current = get(KEY.g);
-  const images = await filesToData(files);
-
-  const next = [...current, ...images.map(src => ({
+  const next = [...current, {
     id: Date.now() + Math.random(),
-    src
-  }))];
+    src: url
+  }];
 
   set(KEY.g, next);
   e.target.reset();
